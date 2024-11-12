@@ -1,7 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:aplikasitest/model/user.dart';
+import 'package:aplikasitest/model/user.dart'; // Import model User
 
 class CreateScreen extends StatefulWidget {
   const CreateScreen({Key? key}) : super(key: key);
@@ -11,22 +11,29 @@ class CreateScreen extends StatefulWidget {
 }
 
 class _CreateScreenState extends State<CreateScreen> {
+  final _idController = TextEditingController();
   final _nameController = TextEditingController();
   final _kotaController = TextEditingController();
   final _usiaController = TextEditingController();
 
   // Fungsi untuk mengirim data melalui POST
   Future<void> createData() async {
+    final String id = (_idController.text); // Ambil ID dari input
     final String nama = _nameController.text;
     final String kota = _kotaController.text;
     final int? usia = int.tryParse(_usiaController.text);
 
     if (nama.isNotEmpty && kota.isNotEmpty && usia != null) {
-      const url = 'https://selected-doe-95.hasura.app/api/rest/tabel_kota'; // Perbarui URL
+      const url = 'https://selected-doe-95.hasura.app/api/rest/tabel_kota';
       final uri = Uri.parse(url);
 
       // Membuat objek User
-      final newUser = User(id: 0, nama: nama, kota: kota, usia: usia);
+      final newUser = User(
+        id: int.tryParse(id) ?? 0, // Jika ID kosong, set default 0
+        nama: nama,
+        kota: kota,
+        usia: usia,
+      );
 
       // Mengirim data ke API menggunakan metode POST
       try {
@@ -67,6 +74,11 @@ class _CreateScreenState extends State<CreateScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            TextField(
+              controller: _idController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'ID (Optional)'),
+            ),
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(labelText: 'Nama'),
