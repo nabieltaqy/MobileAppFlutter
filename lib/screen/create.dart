@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:aplikasitest/model/user.dart'; // Import model User
+// import 'package:aplikasitest/model/user.dart';
 
 class CreateScreen extends StatefulWidget {
   const CreateScreen({Key? key}) : super(key: key);
@@ -16,24 +16,38 @@ class _CreateScreenState extends State<CreateScreen> {
   final _kotaController = TextEditingController();
   final _usiaController = TextEditingController();
 
-  // Fungsi untuk mengirim data melalui POST
+  // Fungsi untuk mengirim data melalui GraphQL POST
   Future<void> createData() async {
-    final String id = (_idController.text); // Ambil ID dari input
+    final String id = _idController.text;
     final String nama = _nameController.text;
     final String kota = _kotaController.text;
     final int? usia = int.tryParse(_usiaController.text);
 
     if (nama.isNotEmpty && kota.isNotEmpty && usia != null) {
-      const url = 'https://selected-doe-95.hasura.app/api/rest/tabel_kota';
+      const url = 'https://selected-doe-95.hasura.app/v1/graphql';
       final uri = Uri.parse(url);
 
-      // Membuat objek User
-      final newUser = User(
-        id: int.tryParse(id) ?? 0, // Jika ID kosong, set default 0
-        nama: nama,
-        kota: kota,
-        usia: usia,
-      );
+      // GraphQL Mutation Query
+      const mutation = '''
+        mutation insertTableKota(\$object: table_kota_insert_input!) {
+          insert_table_kota_one(object: \$object) {
+            id
+            Nama
+            kota
+            usia
+          }
+        }
+      ''';
+
+      // Membuat variabel untuk GraphQL
+      final variables = {
+        "object": {
+          "id": int.tryParse(id) ?? null, // Bisa juga diisi null jika auto-increment
+          "Nama": nama,
+          "kota": kota,
+          "usia": usia,
+        }
+      };
 
       // Mengirim data ke API menggunakan metode POST
       try {
@@ -44,7 +58,10 @@ class _CreateScreenState extends State<CreateScreen> {
                 'pnvX69BdXPPEKOtmqcaVL9H8wxX4TglwZF3r6Domqpw7MJUW6hZ3ZEQpx6uonNXE',
             'Content-Type': 'application/json',
           },
-          body: jsonEncode(newUser.toJson()), // Mengubah objek User menjadi JSON
+          body: jsonEncode({
+            "query": mutation,
+            "variables": variables,
+          }),
         );
 
         if (response.statusCode == 200) {

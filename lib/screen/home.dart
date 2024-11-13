@@ -17,6 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 62, 62, 62),
+        foregroundColor: Colors.white,
         title: const Text('Home'),
       ),
       body: users.isNotEmpty
@@ -37,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: const Icon(Icons.refresh),
       ),
       bottomNavigationBar: Padding(
+        
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
           onPressed: () {
@@ -46,6 +49,10 @@ class _HomeScreenState extends State<HomeScreen> {
               MaterialPageRoute(builder: (context) => const CreateScreen()),
             );
           },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            foregroundColor: Colors.white,
+          ),
           child: const Text('Create New Entry'),
         ),
       ),
